@@ -14,7 +14,7 @@ export async function postLeadToDashboard(input: {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(config.dashboard.apiKey ? { authorization: config.dashboard.apiKey } : {}),
+      ...(config.dashboard.apiKey ? { "x-api-key": config.dashboard.apiKey } : {}),
       ...(config.dashboard.clientId ? { "x-client-id": config.dashboard.clientId } : {}),
     },
     body: JSON.stringify({
@@ -47,7 +47,7 @@ export async function postCallToDashboard(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(config.dashboard.apiKey ? { authorization: config.dashboard.apiKey } : {}),
+      ...(config.dashboard.apiKey ? { "x-api-key": config.dashboard.apiKey } : {}),
       ...(config.dashboard.clientId ? { "x-client-id": config.dashboard.clientId } : {}),
     },
     body: JSON.stringify({
