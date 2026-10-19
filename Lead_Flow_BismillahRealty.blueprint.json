@@ -1,0 +1,1413 @@
+{
+    "name": "Lead_Flow_BismillahRealty",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 4033536,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "retell"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "retell-ai:CreatePhoneCall",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11877872
+            },
+            "mapper": {
+                "to_number": "{{1.phone_number}}",
+                "from_number": "+13193180164",
+                "override_agent_id": "agent_2a87b4ec8aea2ff05711537951",
+                "retell_llm_dynamic_variables": [
+                    {
+                        "key": "lead_name",
+                        "value": "{{1.lead_name}}"
+                    },
+                    {
+                        "key": "property_interested_in",
+                        "value": "{{1.property_interested_in}}"
+                    },
+                    {
+                        "key": "Phone_Number",
+                        "value": "{{1.phone_number}}"
+                    },
+                    {
+                        "key": "current_datetime",
+                        "value": "{{1.time}}"
+                    },
+                    {
+                        "key": "timezone",
+                        "value": "Asia/karachi"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "restore": {
+                    "expect": {
+                        "metadata": {
+                            "mode": "chose"
+                        },
+                        "retell_llm_dynamic_variables": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "retell-ai"
+                            },
+                            "label": "My Retell AI_"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:retell-ai",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "from_number",
+                        "type": "text",
+                        "label": "From Number",
+                        "required": true
+                    },
+                    {
+                        "name": "to_number",
+                        "type": "text",
+                        "label": "To Number",
+                        "required": true
+                    },
+                    {
+                        "name": "override_agent_id",
+                        "type": "text",
+                        "label": "Override Agent ID"
+                    },
+                    {
+                        "name": "override_agent_version",
+                        "type": "uinteger",
+                        "label": "Override Agent Version"
+                    },
+                    {
+                        "name": "retell_llm_dynamic_variables",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Key"
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Parameter"
+                        },
+                        "type": "array",
+                        "label": "Retell LLM Dynamic Variables"
+                    },
+                    {
+                        "name": "metadata",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Key"
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Parameter"
+                        },
+                        "type": "array",
+                        "label": "Metadata"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "module": "util:FunctionSleep",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "duration": "300"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "name": "duration",
+                        "type": "uinteger",
+                        "label": "Delay",
+                        "required": true,
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "module": "util:FunctionSleep",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "duration": "200"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 900,
+                    "y": 0
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "name": "duration",
+                        "type": "uinteger",
+                        "label": "Delay",
+                        "required": true,
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "module": "retell-ai:GetCall",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11877872
+            },
+            "mapper": {
+                "call_id": "{{2.call_id}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1200,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "retell-ai"
+                            },
+                            "label": "My Retell AI_"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:retell-ai",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "call_id",
+                        "type": "text",
+                        "label": "Call ID",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 8,
+            "module": "deepseek-ai:createAChatCompletion",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 5608698
+            },
+            "mapper": {
+                "model": "deepseek-chat",
+                "top_p": "1",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "Extract appointment details from the following transcript. Determine the specific appointment time and date, keeping in mind the current date/time context: {{now}} (Asia/Karachi).\n\nReturn the data in a strict JSON format. The summary must be written as a briefing for the agent, clearly stating the outcome of the conversation and the specific next steps they need to take.\n\nRequired JSON Structure:\n\nJSON\n{\n  \"Start_date_time\": \"in format of google calendar (ISO 8601)\",\n  \"name_of_appointment\": \"[Client Name] | [Property Name/Address]\",\n  \"summary\": \"What occurred during the call and exactly what needs to be done next.\"\n}"
+                    },
+                    {
+                        "role": "user",
+                        "content": "{{5.transcript}}"
+                    }
+                ],
+                "max_tokens": "1000",
+                "temperature": "1",
+                "response_format": {
+                    "type": "json_object"
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1658,
+                    "y": 39
+                },
+                "restore": {
+                    "expect": {
+                        "stop": {
+                            "mode": "chose"
+                        },
+                        "model": {
+                            "mode": "chose",
+                            "label": "deepseek-chat"
+                        },
+                        "logprobs": {
+                            "mode": "chose"
+                        },
+                        "messages": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "System"
+                                    }
+                                },
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    }
+                                }
+                            ]
+                        },
+                        "response_format": {
+                            "nested": {
+                                "type": {
+                                    "mode": "chose",
+                                    "label": "JSON Object"
+                                }
+                            }
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "deepseek-ai"
+                            },
+                            "label": "My DeepSeek AI connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:deepseek-ai",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "messages",
+                        "spec": [
+                            {
+                                "name": "role",
+                                "type": "select",
+                                "label": "Role",
+                                "dynamic": true,
+                                "options": [
+                                    {
+                                        "label": "User",
+                                        "value": "user"
+                                    },
+                                    {
+                                        "label": "System",
+                                        "value": "system"
+                                    },
+                                    {
+                                        "label": "Assistant",
+                                        "value": "assistant"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            {
+                                "name": "content",
+                                "type": "text",
+                                "label": "Content",
+                                "required": true
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true
+                    },
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "Model",
+                        "required": true
+                    },
+                    {
+                        "name": "max_tokens",
+                        "type": "number",
+                        "label": "Max Tokens",
+                        "validate": {
+                            "max": 8192,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "temperature",
+                        "type": "number",
+                        "label": "Temperature",
+                        "validate": {
+                            "max": 2,
+                            "min": 0
+                        }
+                    },
+                    {
+                        "name": "response_format",
+                        "spec": [
+                            {
+                                "name": "type",
+                                "type": "select",
+                                "label": "Type",
+                                "validate": {
+                                    "enum": [
+                                        "text",
+                                        "json_object"
+                                    ]
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Response Format"
+                    },
+                    {
+                        "name": "frequency_penalty",
+                        "type": "number",
+                        "label": "Frequency Penalty",
+                        "validate": {
+                            "max": 2,
+                            "min": -2
+                        }
+                    },
+                    {
+                        "name": "presence_penalty",
+                        "type": "number",
+                        "label": "Presence Penalty",
+                        "validate": {
+                            "max": 2,
+                            "min": -2
+                        }
+                    },
+                    {
+                        "name": "stop",
+                        "spec": {
+                            "name": "value",
+                            "type": "text"
+                        },
+                        "type": "array",
+                        "label": "Stop"
+                    },
+                    {
+                        "name": "top_p",
+                        "type": "number",
+                        "label": "Top P",
+                        "validate": {
+                            "max": 1,
+                            "min": 0
+                        }
+                    },
+                    {
+                        "name": "logprobs",
+                        "type": "boolean",
+                        "label": "Logprobs"
+                    },
+                    {
+                        "name": "top_logprobs",
+                        "type": "number",
+                        "label": "Top Logprobs",
+                        "validate": {
+                            "max": 20,
+                            "min": 0
+                        }
+                    },
+                    {
+                        "name": "tools",
+                        "type": "any",
+                        "label": "Tools"
+                    },
+                    {
+                        "name": "tool_choice",
+                        "type": "any",
+                        "label": "Tool Choice"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 10,
+            "module": "json:ParseJSON",
+            "version": 1,
+            "parameters": {
+                "type": 565982
+            },
+            "mapper": {
+                "json": "{{8.result}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1958,
+                    "y": 39
+                },
+                "restore": {
+                    "parameters": {
+                        "type": {
+                            "label": "Call_LeadFlow_"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "type",
+                        "type": "udt",
+                        "label": "Data structure"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "json",
+                        "type": "text",
+                        "label": "JSON string",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "help": "",
+                        "name": "one",
+                        "type": "text",
+                        "label": null,
+                        "default": null,
+                        "required": false,
+                        "multiline": false
+                    }
+                ]
+            }
+        },
+        {
+            "id": 11,
+            "module": "google-calendar:createAnEvent",
+            "version": 5,
+            "parameters": {
+                "__IMTCONN__": 2706336
+            },
+            "mapper": {
+                "start": "{{10.Start_date_time}}",
+                "select": "detail",
+                "summary": "{{10.name_of_appointment}}",
+                "calendar": "68aa72476f939981e8180e07d6387cd0c74362b337a980bb18613a2a879f21ef@group.calendar.google.com",
+                "duration": "00:15",
+                "visibility": "default",
+                "allDayEvent": false,
+                "description": "{{10.summary}}",
+                "transparency": "opaque",
+                "conferenceDate": false,
+                "guestPermissions": {
+                    "guestsCanModify": false,
+                    "guestsCanInviteOthers": true,
+                    "guestsCanSeeOtherGuests": true
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2280,
+                    "y": 310
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "In Detail"
+                        },
+                        "colorId": {
+                            "mode": "chose"
+                        },
+                        "calendar": {
+                            "mode": "chose",
+                            "label": "April_Cal"
+                        },
+                        "attendees": {
+                            "mode": "chose"
+                        },
+                        "eventType": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "overrides": {
+                            "mode": "chose"
+                        },
+                        "recurrence": {
+                            "mode": "chose"
+                        },
+                        "visibility": {
+                            "mode": "chose",
+                            "label": "Default"
+                        },
+                        "allDayEvent": {
+                            "mode": "chose"
+                        },
+                        "attachments": {
+                            "mode": "chose"
+                        },
+                        "sendUpdates": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "transparency": {
+                            "mode": "chose",
+                            "label": "Busy"
+                        },
+                        "conferenceDate": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "My Google connection (digigrey.ai@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Create an Event",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "quick",
+                                "detail"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "calendar",
+                        "type": "select",
+                        "label": "Calendar ID",
+                        "required": true
+                    },
+                    {
+                        "name": "summary",
+                        "type": "text",
+                        "label": "Event Name",
+                        "required": true
+                    },
+                    {
+                        "name": "conferenceDate",
+                        "type": "boolean",
+                        "label": "Add Google Meet Video Conferencing",
+                        "required": true
+                    },
+                    {
+                        "name": "attendees",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "displayName",
+                                    "type": "text",
+                                    "label": "Name"
+                                },
+                                {
+                                    "name": "email",
+                                    "type": "email",
+                                    "label": "Email",
+                                    "required": true
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Attendee"
+                        },
+                        "type": "array",
+                        "label": "Attendees"
+                    },
+                    {
+                        "name": "allDayEvent",
+                        "type": "boolean",
+                        "label": "All Day Event",
+                        "required": true
+                    },
+                    {
+                        "name": "start",
+                        "time": true,
+                        "type": "date",
+                        "label": "Start Date",
+                        "required": true
+                    },
+                    {
+                        "name": "end",
+                        "time": true,
+                        "type": "date",
+                        "label": "End Date"
+                    },
+                    {
+                        "name": "duration",
+                        "type": "time",
+                        "label": "Duration"
+                    },
+                    {
+                        "name": "eventType",
+                        "type": "select",
+                        "label": "Event Type",
+                        "validate": {
+                            "enum": [
+                                "outOfOffice",
+                                "focusTime"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "colorId",
+                        "type": "select",
+                        "label": "Color"
+                    },
+                    {
+                        "name": "description",
+                        "type": "text",
+                        "label": "Description"
+                    },
+                    {
+                        "name": "location",
+                        "type": "text",
+                        "label": "Location"
+                    },
+                    {
+                        "name": "useDefault",
+                        "type": "boolean",
+                        "label": "Use the default reminder settings for this event"
+                    },
+                    {
+                        "name": "overrides",
+                        "spec": [
+                            {
+                                "name": "method",
+                                "type": "select",
+                                "label": "Method",
+                                "options": [
+                                    {
+                                        "label": "Email",
+                                        "value": "email"
+                                    },
+                                    {
+                                        "label": "Pop-up",
+                                        "value": "popup"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            {
+                                "name": "minutes",
+                                "type": "uinteger",
+                                "label": "Minutes",
+                                "required": true,
+                                "validate": {
+                                    "max": 40320
+                                }
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Reminders",
+                        "validate": {
+                            "maxItems": 5
+                        }
+                    },
+                    {
+                        "name": "transparency",
+                        "type": "select",
+                        "label": "Show me as",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "opaque",
+                                "transparent"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "visibility",
+                        "type": "select",
+                        "label": "Visibility",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "default",
+                                "public",
+                                "private"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sendUpdates",
+                        "type": "select",
+                        "label": "Send notifications about the event creation",
+                        "validate": {
+                            "enum": [
+                                "all",
+                                "externalOnly",
+                                "none"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "guestPermissions",
+                        "spec": [
+                            {
+                                "name": "guestsCanModify",
+                                "type": "boolean",
+                                "label": "Modify event",
+                                "required": true
+                            },
+                            {
+                                "name": "guestsCanInviteOthers",
+                                "type": "boolean",
+                                "label": "Invite others",
+                                "required": true
+                            },
+                            {
+                                "name": "guestsCanSeeOtherGuests",
+                                "type": "boolean",
+                                "label": "See guest list",
+                                "required": true
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Guest Permissions"
+                    },
+                    {
+                        "name": "recurrence",
+                        "spec": {
+                            "name": "value",
+                            "type": "text",
+                            "label": "Value"
+                        },
+                        "type": "array",
+                        "label": "Recurrence"
+                    },
+                    {
+                        "name": "attachments",
+                        "spec": [
+                            {
+                                "name": "fileUrl",
+                                "type": "url",
+                                "label": "File URL",
+                                "required": true
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Attachments"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 14,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://backendaap.agentassistplus.com/api/make/cp/outboundcalls",
+                "method": "post",
+                "headers": [
+                    {
+                        "name": "x-client-id",
+                        "value": "client_dd081909-b88d-4d92-bbd1-cf7508f13d98"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "value": "api_a67359098c5e489f436c186f5f3b4853543930ab992b268979cea04a9382d016"
+                    }
+                ],
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": true,
+                "jsonStringBodyContent": "{\r\n  \"name\": \"{{1.lead_name}}\",\r\n  \"email\": \"bilal@gmail.com\",\r\n  \"phoneNumber\": \"{{1.phone_number}}\",\r\n  \"callRecordingURL\": \"{{5.recording_url}}\",\r\n  \"summary\": \"{{10.summary}}\",\r\n  \"callDuration\":{{5.call_cost.total_duration_seconds}} ,\r\n  \"callId\": \"{{5.call_id}}\"\r\n}",
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2753,
+                    "y": 564
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "POST"
+                        },
+                        "headers": {
+                            "mode": "chose",
+                            "items": [
+                                null,
+                                null
+                            ]
+                        },
+                        "contentType": {
+                            "label": "application/jsonEnter data in the JSON format, as a string or using a data structure."
+                        },
+                        "inputMethod": {
+                            "label": "JSON stringEnter the JSON body as a raw text string. If values contain JSON reserved characters, you must escape them manually."
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "paginationType": {
+                            "label": "Empty"
+                        },
+                        "queryParameters": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "tlsType": {
+                            "label": "Empty"
+                        },
+                        "proxyKeychain": {
+                            "label": "Choose a key"
+                        },
+                        "authenticationType": {
+                            "label": "No authenticationUse when no credentials are required for the request."
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true,
+                                    "validate": {
+                                        "pattern": "^[-!#$%&'*+.^_`|~0-9A-Za-z]+$"
+                                    }
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "queryParameters",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Parameter"
+                        },
+                        "type": "array",
+                        "label": "Query parameters"
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies with other HTTP modules",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    },
+                    {
+                        "name": "inputMethod",
+                        "type": "select",
+                        "label": "Body input method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "dataStructure",
+                                "jsonString"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "jsonStringBodyContent",
+                        "type": "text",
+                        "label": "Body content",
+                        "required": true
+                    },
+                    {
+                        "name": "paginationType",
+                        "type": "select",
+                        "label": "Pagination type",
+                        "validate": {
+                            "enum": [
+                                "offsetBased",
+                                "pageBased",
+                                "urlBased",
+                                "tokenBased"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "content-length",
+                                "type": "text",
+                                "label": "Content-Length"
+                            },
+                            {
+                                "name": "content-encoding",
+                                "type": "text",
+                                "label": "Content-Encoding"
+                            },
+                            {
+                                "name": "content-type",
+                                "type": "text",
+                                "label": "Content-Type"
+                            },
+                            {
+                                "name": "server",
+                                "type": "text",
+                                "label": "Server"
+                            },
+                            {
+                                "name": "cache-control",
+                                "type": "text",
+                                "label": "Cache-Control"
+                            },
+                            {
+                                "name": "set-cookie",
+                                "spec": {
+                                    "type": "text"
+                                },
+                                "type": "array",
+                                "label": "Set-Cookie"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Headers"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": [
+                [
+                    {
+                        "id": 7,
+                        "module": "google-calendar:createAnEvent",
+                        "version": 5,
+                        "metadata": {
+                            "designer": {
+                                "x": 2400,
+                                "y": 0,
+                                "messages": [
+                                    {
+                                        "category": "link",
+                                        "severity": "warning",
+                                        "message": "This module is not connected to the flow. This module and everything after it will be skipped during execution. <autoconnect>Link it to your scenario to include them.</autoconnect>"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                [
+                    {
+                        "id": 12,
+                        "module": "retell-ai:CreatePhoneCall",
+                        "version": 1,
+                        "parameters": {
+                            "__IMTCONN__": 11877872
+                        },
+                        "mapper": {
+                            "to_number": "+16625780557",
+                            "from_number": "+13193180164",
+                            "override_agent_id": "agent_f6ae81d07308a6d71ef4554a8e",
+                            "retell_llm_dynamic_variables": [
+                                {
+                                    "key": "lead_name",
+                                    "value": "Bilal"
+                                },
+                                {
+                                    "key": "property_interested_in",
+                                    "value": "villa"
+                                },
+                                {
+                                    "key": "Phone_Number",
+                                    "value": "+16625780557"
+                                }
+                            ]
+                        },
+                        "metadata": {
+                            "designer": {
+                                "x": 224,
+                                "y": 267,
+                                "messages": [
+                                    {
+                                        "category": "link",
+                                        "severity": "warning",
+                                        "message": "This module is not connected to the flow. This module and everything after it will be skipped during execution. <autoconnect>Link it to your scenario to include them.</autoconnect>"
+                                    }
+                                ]
+                            },
+                            "restore": {
+                                "expect": {
+                                    "metadata": {
+                                        "mode": "chose"
+                                    },
+                                    "retell_llm_dynamic_variables": {
+                                        "mode": "chose",
+                                        "items": [
+                                            null,
+                                            null,
+                                            null
+                                        ]
+                                    }
+                                },
+                                "parameters": {
+                                    "__IMTCONN__": {
+                                        "data": {
+                                            "scoped": "true",
+                                            "connection": "retell-ai"
+                                        },
+                                        "label": "My Retell AI_"
+                                    }
+                                }
+                            },
+                            "parameters": [
+                                {
+                                    "name": "__IMTCONN__",
+                                    "type": "account:retell-ai",
+                                    "label": "Connection",
+                                    "required": true
+                                }
+                            ],
+                            "expect": [
+                                {
+                                    "name": "from_number",
+                                    "type": "text",
+                                    "label": "From Number",
+                                    "required": true
+                                },
+                                {
+                                    "name": "to_number",
+                                    "type": "text",
+                                    "label": "To Number",
+                                    "required": true
+                                },
+                                {
+                                    "name": "override_agent_id",
+                                    "type": "text",
+                                    "label": "Override Agent ID"
+                                },
+                                {
+                                    "name": "override_agent_version",
+                                    "type": "uinteger",
+                                    "label": "Override Agent Version"
+                                },
+                                {
+                                    "name": "retell_llm_dynamic_variables",
+                                    "spec": {
+                                        "name": "value",
+                                        "spec": [
+                                            {
+                                                "name": "key",
+                                                "type": "text",
+                                                "label": "Key"
+                                            },
+                                            {
+                                                "name": "value",
+                                                "type": "text",
+                                                "label": "Value"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Parameter"
+                                    },
+                                    "type": "array",
+                                    "label": "Retell LLM Dynamic Variables"
+                                },
+                                {
+                                    "name": "metadata",
+                                    "spec": {
+                                        "name": "value",
+                                        "spec": [
+                                            {
+                                                "name": "key",
+                                                "type": "text",
+                                                "label": "Key"
+                                            },
+                                            {
+                                                "name": "value",
+                                                "type": "text",
+                                                "label": "Value"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Parameter"
+                                    },
+                                    "type": "array",
+                                    "label": "Metadata"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            ]
+        },
+        "zone": "eu2.make.com",
+        "notes": []
+    }
+}

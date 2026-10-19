@@ -1,0 +1,142 @@
+{
+    "name": "Telnyx Call",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 3927645,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "telnyx"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "module": "util:FunctionSleep",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "duration": "300"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "name": "duration",
+                        "type": "uinteger",
+                        "label": "Delay",
+                        "required": true,
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "module": "util:FunctionSleep",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "duration": "300"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                },
+                "restore": {},
+                "expect": [
+                    {
+                        "name": "duration",
+                        "type": "uinteger",
+                        "label": "Delay",
+                        "required": true,
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": [
+                [
+                    {
+                        "id": 3,
+                        "module": "gateway:WebhookRespond",
+                        "version": 1,
+                        "metadata": {
+                            "designer": {
+                                "x": 506,
+                                "y": 238,
+                                "messages": [
+                                    {
+                                        "category": "link",
+                                        "severity": "warning",
+                                        "message": "This module is not connected to the flow. This module and everything after it will be skipped during execution. <autoconnect>Link it to your scenario to include them.</autoconnect>"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            ]
+        },
+        "zone": "eu2.make.com",
+        "notes": []
+    }
+}
