@@ -403,6 +403,8 @@ async function runOutboundStep(
       callDuration: synced?.duration_sec ?? 0,
       callId,
       summary: synced?.extraction?.summary ?? "",
+      agentId: synced?.agent_id ?? null,
+      fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
     });
     await stepDone(wfId, "dashboard_post_call", "POST call result to dashboard");
     updateWorkflow(wfId, { status: "completed", current_step: "done" });

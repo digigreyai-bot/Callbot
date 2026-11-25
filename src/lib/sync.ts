@@ -90,6 +90,8 @@ export async function processInboundCallEnded(retellCallId: string): Promise<Cal
         callDuration: synced.duration_sec ?? 0,
         callId: retellCallId,
         summary: synced.extraction?.summary ?? "",
+        agentId: synced.agent_id ?? null,
+        fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
       },
       { inbound: true }
     );
@@ -120,24 +122,18 @@ async function forwardToDashboard(callId: number) {
   const details = getCallWithDetails(callId);
   if (!details) return;
   try {
-    await fetch(config.dashboard.url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(config.dashboard.apiKey ? { "x-api-key": config.dashboard.apiKey } : {}),
-        ...(config.dashboard.clientId ? { "x-client-id": config.dashboard.clientId } : {}),
-      },
-      body: JSON.stringify({
-        name: details.extraction?.name ?? details.lead?.name ?? "",
-        email: details.extraction?.email ?? "",
-        phoneNumber: details.extraction?.phone ?? details.lead?.phone ?? "",
-        appointmentTime: details.extraction?.appointment_time ?? "",
-        property_interested_in: details.extraction?.property_interested_in ?? "",
-        callRecordingURL: details.recording_url ?? "",
-        callDuration: details.duration_sec ?? 0,
-        callId: details.retell_call_id,
-        summary: details.extraction?.summary ?? "",
-      }),
+    await postCallToDashboard({
+      name: details.extraction?.name ?? details.lead?.name ?? "",
+      email: details.extraction?.email ?? "",
+      phoneNumber: details.extraction?.phone ?? details.lead?.phone ?? "",
+      appointmentTime: details.extraction?.appointment_time ?? "",
+      propertyInterestedIn: details.extraction?.property_interested_in ?? "",
+      callRecordingURL: details.recording_url ?? "",
+      callDuration: details.duration_sec ?? 0,
+      callId: details.retell_call_id,
+      summary: details.extraction?.summary ?? "",
+      agentId: details.agent_id ?? null,
+      fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
     });
   } catch (err) {
     console.error("[dashboard-forward] failed:", err);

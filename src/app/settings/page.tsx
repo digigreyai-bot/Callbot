@@ -69,8 +69,10 @@ export default function SettingsPage() {
             />
           </dl>
           <p className="mt-4 text-xs text-muted">
-            Set <code className="text-white/80">DASHBOARD_API_URL</code> in .env to also forward each
-            extracted call to an external dashboard (replicates the old Make.com HTTP POST).
+            Set <code className="text-white/80">DASHBOARD_API_URL</code> and{" "}
+            <code className="text-white/80">DASHBOARD_SERVICE_KEY</code> (same as AA+{" "}
+            <code className="text-white/80">CALLBOT_SERVICE_KEY</code>) so each Retell agent maps to
+            the correct AA+ client.
           </p>
         </section>
       </div>

@@ -20,6 +20,20 @@ function envInt(name: string, fallback: number): number {
   return isNaN(v) ? fallback : v;
 }
 
+/** Derive /api/make/cp/resolve from an outbound/inbound dashboard URL. */
+function deriveResolveUrl(dashboardUrl: string): string {
+  if (!dashboardUrl) return "";
+  try {
+    const u = new URL(dashboardUrl);
+    u.pathname = "/api/make/cp/resolve";
+    u.search = "";
+    u.hash = "";
+    return u.toString();
+  } catch {
+    return "";
+  }
+}
+
 export const config = {
   retell: {
     apiKey: env("RETELL_API_KEY"),
@@ -59,6 +73,12 @@ export const config = {
     inboundUrl: env("DASHBOARD_INBOUND_URL", env("DASHBOARD_API_URL")),
     apiKey: env("DASHBOARD_API_KEY"),
     clientId: env("DASHBOARD_CLIENT_ID"),
+    /** Shared secret with AA+ CALLBOT_SERVICE_KEY — enables multi-tenant routing. */
+    serviceKey: env("DASHBOARD_SERVICE_KEY", env("CALLBOT_SERVICE_KEY")),
+    resolveUrl: env(
+      "DASHBOARD_RESOLVE_URL",
+      deriveResolveUrl(env("DASHBOARD_API_URL") || env("DASHBOARD_INBOUND_URL"))
+    ),
     leadUrl: env("DASHBOARD_LEAD_URL", "https://real-estate-automation-backend.vercel.app/api/make/lf/leads"),
   },
 };
@@ -105,6 +125,8 @@ export function configStatus() {
     calendarId: config.calendar.calendarId || null,
     timezone: config.timezone,
     dashboardForwarding: Boolean(config.dashboard.url),
+    dashboardServiceKey: Boolean(config.dashboard.serviceKey),
+    dashboardResolveUrl: config.dashboard.resolveUrl || null,
     smsWaitSec: config.workflow.smsWaitSec,
   };
 }
