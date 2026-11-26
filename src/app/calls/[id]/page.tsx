@@ -149,14 +149,14 @@ export default function CallDetailPage() {
         <div className="space-y-6">
           {call.recording_url && (
             <div className="card p-5">
-              <h3 className="mb-3 text-sm font-semibold text-white">Recording</h3>
+              <h3 className="mb-3 text-sm font-semibold text-ink">Recording</h3>
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <audio controls src={call.recording_url} className="w-full" />
             </div>
           )}
 
           <div className="card p-5">
-            <h3 className="mb-3 text-sm font-semibold text-white">Transcript</h3>
+            <h3 className="mb-3 text-sm font-semibold text-ink">Transcript</h3>
             {turns.length === 0 ? (
               <p className="text-sm text-muted">
                 {call.status === "ended"
@@ -169,7 +169,7 @@ export default function CallDetailPage() {
                   <div
                     key={i}
                     className={`max-w-[88%] rounded-2xl px-4 py-2.5 text-sm ${
-                      t.role === "agent" ? "bg-surface2 text-white" : "ml-auto bg-primary/20 text-white"
+                      t.role === "agent" ? "bg-surface2 text-ink" : "ml-auto bg-primary/20 text-ink"
                     }`}
                   >
                     <p className="mb-0.5 text-[10px] uppercase tracking-wide text-muted">
@@ -186,7 +186,7 @@ export default function CallDetailPage() {
         {/* Extraction */}
         <div className="space-y-6">
           <div className="card p-5">
-            <h3 className="mb-4 text-sm font-semibold text-white">Extracted Details</h3>
+            <h3 className="mb-4 text-sm font-semibold text-ink">Extracted Details</h3>
             {!ext ? (
               <p className="text-sm text-muted">
                 {call.status === "ended"
@@ -210,7 +210,7 @@ export default function CallDetailPage() {
 
           {ext?.summary && (
             <div className="card p-5">
-              <h3 className="mb-2 text-sm font-semibold text-white">Summary</h3>
+              <h3 className="mb-2 text-sm font-semibold text-ink">Summary</h3>
               <p className="text-sm leading-relaxed text-muted">{ext.summary}</p>
             </div>
           )}
@@ -232,7 +232,7 @@ function Field({
   return (
     <div className="flex items-start justify-between gap-4 border-b border-border/50 pb-3 last:border-0 last:pb-0">
       <dt className="text-muted">{label}</dt>
-      <dd className={`text-right font-medium ${highlight && value ? "text-success" : "text-white"}`}>
+      <dd className={`text-right font-medium ${highlight && value ? "text-success" : "text-ink"}`}>
         {value || "—"}
       </dd>
     </div>

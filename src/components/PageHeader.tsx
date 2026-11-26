@@ -10,7 +10,7 @@ export default function PageHeader({
   return (
     <div className="mb-7 flex items-start justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-ink">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
       </div>
       {action}

@@ -12,6 +12,7 @@ export async function POST(req: Request) {
     const phone = String(body.phone ?? "").trim();
     const property = String(body.property ?? "").trim();
     const agentId = String(body.agentId ?? "outbound").trim();
+    const clientId = String(body.clientId ?? "").trim() || undefined;
 
     if (!phone) {
       return NextResponse.json({ error: "Phone number is required." }, { status: 400 });
@@ -25,7 +26,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const lead = createLead({ name, phone, property_interested_in: property || null });
+    const lead = createLead({
+      name,
+      phone,
+      property_interested_in: property || null,
+      client_id: clientId || null,
+    });
 
     const dynamicVars: Record<string, string> = {
       lead_name: name,
@@ -39,7 +45,10 @@ export async function POST(req: Request) {
       toNumber: phone,
       overrideAgentId: agent.retellAgentId,
       dynamicVars,
-      metadata: { lead_id: String(lead.id) },
+      metadata: {
+        lead_id: String(lead.id),
+        ...(clientId ? { client_id: clientId } : {}),
+      },
     });
 
     const call = createCall({

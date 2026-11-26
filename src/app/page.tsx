@@ -72,7 +72,7 @@ export default function DashboardPage() {
 
       <div className="card mt-7 overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <h2 className="text-sm font-semibold text-white">Recent Calls</h2>
+          <h2 className="text-sm font-semibold text-ink">Recent Calls</h2>
           <div className="flex gap-1">
             {(["all", "inbound", "outbound"] as const).map((f) => (
               <button
@@ -80,7 +80,7 @@ export default function DashboardPage() {
                 type="button"
                 onClick={() => setFilter(f)}
                 className={`rounded-lg px-2.5 py-1 text-xs capitalize ${
-                  filter === f ? "bg-primary/20 text-white" : "text-muted hover:text-white"
+                  filter === f ? "bg-primary/20 text-ink" : "text-muted hover:text-ink"
                 }`}
               >
                 {f}
@@ -119,7 +119,7 @@ export default function DashboardPage() {
                   >
                     <td className="px-5 py-3.5">
                       <Link href={`/calls/${c.id}`} className="block">
-                        <p className="font-medium text-white group-hover:text-primary">
+                        <p className="font-medium text-ink group-hover:text-primary">
                           {c.lead?.name || c.extraction?.name || "Unknown"}
                         </p>
                         <p className="text-xs text-muted">
@@ -171,7 +171,7 @@ function StatCard({
           ? "text-warn"
           : accent === "danger"
             ? "text-danger"
-            : "text-white";
+            : "text-ink";
   return (
     <div className="card p-5">
       <p className="text-xs uppercase tracking-wide text-muted">{label}</p>

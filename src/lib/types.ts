@@ -6,7 +6,19 @@ export interface Lead {
   phone: string;
   email: string | null;
   property_interested_in: string | null;
+  client_id: string | null;
   created_at: string;
+}
+
+export interface ClientRow {
+  id: string;
+  name: string;
+  dashboard_client_id: string;
+  dashboard_api_key: string | null;
+  calendar_id: string | null;
+  is_default: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CallRow {

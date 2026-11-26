@@ -63,7 +63,7 @@ export default function WorkflowsPage() {
               {workflows.map((w) => (
                 <tr key={w.id} className="border-b border-border/60 hover:bg-surface2/50">
                   <td className="px-5 py-3.5">
-                    <Link href={`/workflows/${w.id}`} className="font-medium text-white hover:text-primary">
+                    <Link href={`/workflows/${w.id}`} className="font-medium text-ink hover:text-primary">
                       {w.lead.name || "—"}
                     </Link>
                     <p className="text-xs text-muted">{w.lead.phone}</p>

@@ -1,4 +1,5 @@
 import { config } from "./config";
+import type { ClientCreds } from "./clients";
 
 /** External dashboard POST — mirrors Make.com http:ActionSendData modules. */
 
@@ -28,10 +29,22 @@ function buildHeaders(auth: DashboardAuth): Record<string, string> {
   return headers;
 }
 
-async function resolveClientAuth(opts: {
+/** Prefer explicit UI client creds; otherwise resolve via AA+ service key / env. */
+async function resolveAuth(opts: {
   agentId?: string | null;
   callingNumber?: string | null;
+  creds?: ClientCreds | null;
 }): Promise<DashboardAuth> {
+  if (opts.creds?.dashboardClientId || opts.creds?.apiKey) {
+    return {
+      clientId: opts.creds.dashboardClientId || config.dashboard.clientId || null,
+      apiKey: opts.creds.apiKey || config.dashboard.apiKey || undefined,
+      serviceKey: undefined,
+      agentId: opts.agentId || null,
+      callingNumber: opts.callingNumber || null,
+    };
+  }
+
   const serviceKey = config.dashboard.serviceKey;
   const fallback: DashboardAuth = {
     clientId: config.dashboard.clientId || null,
@@ -66,16 +79,19 @@ async function resolveClientAuth(opts: {
   }
 }
 
-export async function postLeadToDashboard(input: {
-  leadId: string;
-  firstName: string;
-  phoneNumber: string;
-  email?: string;
-  agentId?: string;
-}) {
+export async function postLeadToDashboard(
+  input: {
+    leadId: string;
+    firstName: string;
+    phoneNumber: string;
+    email?: string;
+    agentId?: string;
+  },
+  creds?: ClientCreds | null
+) {
   const url = config.dashboard.leadUrl;
   if (!url) return;
-  const auth = await resolveClientAuth({ agentId: input.agentId });
+  const auth = await resolveAuth({ agentId: input.agentId, creds });
   await fetch(url, {
     method: "POST",
     headers: buildHeaders(auth),
@@ -104,7 +120,7 @@ export async function postCallToDashboard(
     agentId?: string | null;
     fromNumber?: string | null;
   },
-  opts?: { inbound?: boolean }
+  opts?: { inbound?: boolean; creds?: ClientCreds | null }
 ) {
   const url =
     opts?.inbound && config.dashboard.inboundUrl
@@ -112,9 +128,10 @@ export async function postCallToDashboard(
       : config.dashboard.url;
   if (!url) return;
 
-  const auth = await resolveClientAuth({
+  const auth = await resolveAuth({
     agentId: input.agentId,
     callingNumber: input.fromNumber,
+    creds: opts?.creds,
   });
 
   const res = await fetch(url, {
@@ -142,15 +159,18 @@ export async function postCallToDashboard(
   }
 }
 
-export async function postScheduleToDashboard(input: {
-  name: string;
-  phoneNumber: string;
-  scheduledAt: string;
-  notes?: string;
-  agentId?: string | null;
-}) {
+export async function postScheduleToDashboard(
+  input: {
+    name: string;
+    phoneNumber: string;
+    scheduledAt: string;
+    notes?: string;
+    agentId?: string | null;
+  },
+  creds?: ClientCreds | null
+) {
   if (!config.dashboard.url) return;
-  const auth = await resolveClientAuth({ agentId: input.agentId });
+  const auth = await resolveAuth({ agentId: input.agentId, creds });
   await fetch(config.dashboard.url, {
     method: "POST",
     headers: buildHeaders(auth),

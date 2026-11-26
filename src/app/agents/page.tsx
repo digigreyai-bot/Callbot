@@ -160,7 +160,7 @@ export default function AgentsPage() {
               <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted">{s.direction}</p>
-                  <h2 className="text-lg font-semibold text-white">{s.agentName || s.label}</h2>
+                  <h2 className="text-lg font-semibold text-ink">{s.agentName || s.label}</h2>
                   <p className="mt-1 text-xs text-muted">{s.label}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -182,26 +182,26 @@ export default function AgentsPage() {
               <dl className="mb-4 grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <dt className="text-muted">Agent ID</dt>
-                  <dd className="break-all text-white/90">{s.agentId}</dd>
+                  <dd className="break-all text-ink/90">{s.agentId}</dd>
                 </div>
                 <div>
                   <dt className="text-muted">Voice</dt>
-                  <dd className="text-white/90">{s.voiceId || "—"}</dd>
+                  <dd className="text-ink/90">{s.voiceId || "—"}</dd>
                 </div>
                 <div>
                   <dt className="text-muted">Language</dt>
-                  <dd className="text-white/90">{s.language || "—"}</dd>
+                  <dd className="text-ink/90">{s.language || "—"}</dd>
                 </div>
                 <div>
                   <dt className="text-muted">LLM</dt>
-                  <dd className="break-all text-white/90">{s.llmId || "—"}</dd>
+                  <dd className="break-all text-ink/90">{s.llmId || "—"}</dd>
                 </div>
               </dl>
 
               {!s.error && (
                 <div className="mb-4 rounded-xl border border-border bg-surface2/60 p-3">
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-xs font-semibold text-white/80">Identity</p>
+                    <p className="text-xs font-semibold text-ink/80">Identity</p>
                     {identityId !== s.agentId && (
                       <button
                         type="button"
@@ -258,7 +258,7 @@ export default function AgentsPage() {
                           {IDENTITY_FIELDS.map((f) => (
                             <div key={f.key}>
                               <dt className="text-muted">{f.label}</dt>
-                              <dd className="break-all text-white/90">{id[f.key] || "—"}</dd>
+                              <dd className="break-all text-ink/90">{id[f.key] || "—"}</dd>
                             </div>
                           ))}
                         </dl>
@@ -333,15 +333,15 @@ export default function AgentsPage() {
                 <div className="mt-auto space-y-3">
                   {s.beginMessage && (
                     <div>
-                      <p className="mb-1 text-xs font-semibold text-white/80">Begin message</p>
-                      <p className="rounded-xl border border-border bg-surface2/80 px-3 py-2 text-xs text-white/85">
+                      <p className="mb-1 text-xs font-semibold text-ink/80">Begin message</p>
+                      <p className="rounded-xl border border-border bg-surface2/80 px-3 py-2 text-xs text-ink/85">
                         {s.beginMessage}
                       </p>
                     </div>
                   )}
                   <div>
-                    <p className="mb-2 text-xs font-semibold text-white/80">Script</p>
-                    <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface2/80 p-4 text-[11px] leading-relaxed text-white/85">
+                    <p className="mb-2 text-xs font-semibold text-ink/80">Script</p>
+                    <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface2/80 p-4 text-[11px] leading-relaxed text-ink/85">
                       {s.generalPrompt || "No prompt found for this agent."}
                     </pre>
                   </div>

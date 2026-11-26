@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ClientSwitcher from "./ClientSwitcher";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: GridIcon },
+  { href: "/clients", label: "Clients", icon: UsersIcon },
   { href: "/workflows", label: "Workflows", icon: FlowIcon },
   { href: "/agents", label: "Agents & Scripts", icon: ScriptIcon },
   { href: "/inbound", label: "Inbound Copilot", icon: InboundIcon },
@@ -19,17 +21,25 @@ const NAV = [
 export default function Sidebar() {
   const pathname = usePathname();
   return (
-    <aside className="flex w-64 flex-col gap-1 border-r border-border bg-surface/60 p-4 backdrop-blur">
-      <div className="mb-6 flex items-center gap-3 px-2">
-        <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-white shadow-glow">
-          <PhoneIcon className="h-5 w-5" />
+    <aside className="flex w-64 flex-col gap-1 border-r border-border bg-surface p-4 shadow-card">
+      <div className="mb-5 flex items-center gap-3 px-1">
+        <div className="grid h-11 w-11 place-items-center rounded-xl bg-surface2 ring-1 ring-border">
+          <span className="text-lg font-black tracking-tight">
+            <span className="text-muted">AA</span>
+            <span className="text-primary">+</span>
+          </span>
         </div>
         <div>
-          <p className="text-sm font-bold leading-tight text-white">Call Bot</p>
-          <p className="text-xs text-muted">Retell control center</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-ink leading-tight">
+            Agent Assist Plus
+          </p>
+          <p className="text-xs text-muted">Call Bot control center</p>
         </div>
       </div>
-      <nav className="flex flex-col gap-1">
+
+      <ClientSwitcher />
+
+      <nav className="flex flex-col gap-1 overflow-y-auto">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
@@ -38,8 +48,8 @@ export default function Sidebar() {
               href={href}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                 active
-                  ? "bg-primary/15 text-white ring-1 ring-primary/40"
-                  : "text-muted hover:bg-surface2 hover:text-white"
+                  ? "bg-primary/15 text-ink ring-1 ring-primary/40"
+                  : "text-muted hover:bg-surface2 hover:text-ink"
               }`}
             >
               <Icon className="h-4.5 w-4.5" />
@@ -49,9 +59,9 @@ export default function Sidebar() {
         })}
       </nav>
       <div className="mt-auto rounded-xl border border-border bg-surface2/70 p-3 text-xs text-muted">
-        <p className="font-semibold text-white/80">Local mode</p>
+        <p className="font-semibold text-ink/80">Shared number</p>
         <p className="mt-1 leading-relaxed">
-          Calls run through your Retell account. Results sync automatically after each call.
+          One Retell line — pick a client so dashboard &amp; calendar go to the right account.
         </p>
       </div>
     </aside>
@@ -132,6 +142,16 @@ function ScriptIcon({ className }: IconProps) {
       <line x1="16" y1="13" x2="8" y2="13" />
       <line x1="16" y1="17" x2="8" y2="17" />
       <polyline points="10 9 9 9 8 9" />
+    </svg>
+  );
+}
+function UsersIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
   );
 }

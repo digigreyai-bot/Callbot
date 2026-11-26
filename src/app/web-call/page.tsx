@@ -151,7 +151,7 @@ export default function WebCallPage() {
                   : "bg-surface2 ring-1 ring-border"
               }`}
             >
-              <MicGlyph className="h-12 w-12 text-white" />
+              <MicGlyph className="h-12 w-12 text-ink" />
             </div>
             <p className="text-sm font-medium text-muted">
               {state === "idle" && "Ready to connect"}
@@ -184,7 +184,7 @@ export default function WebCallPage() {
         </div>
 
         <div className="card flex flex-col p-6">
-          <h3 className="mb-3 text-sm font-semibold text-white">Live Transcript</h3>
+          <h3 className="mb-3 text-sm font-semibold text-ink">Live Transcript</h3>
           <div className="min-h-[320px] flex-1 space-y-3 overflow-y-auto">
             {transcript.length === 0 ? (
               <p className="text-sm text-muted">The conversation will appear here once the call starts.</p>
@@ -194,8 +194,8 @@ export default function WebCallPage() {
                   key={i}
                   className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                     turn.role === "agent"
-                      ? "bg-surface2 text-white"
-                      : "ml-auto bg-primary/20 text-white"
+                      ? "bg-surface2 text-ink"
+                      : "ml-auto bg-primary/20 text-ink"
                   }`}
                 >
                   <p className="mb-0.5 text-[10px] uppercase tracking-wide text-muted">

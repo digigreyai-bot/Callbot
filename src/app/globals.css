@@ -3,21 +3,23 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
 body {
   padding: 0;
   margin: 0;
-  background: #0b0f17;
-  color: #e6e9f0;
+  background: #f7f9fb;
+  color: #1e293b;
 }
 
 body {
+  background-color: #f7f9fb;
   background-image:
-    radial-gradient(900px 600px at 85% -10%, rgba(109, 93, 252, 0.14), transparent 60%),
-    radial-gradient(700px 500px at -10% 10%, rgba(34, 211, 238, 0.1), transparent 55%);
+    linear-gradient(rgba(226, 232, 240, 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226, 232, 240, 0.55) 1px, transparent 1px);
+  background-size: 28px 28px;
   background-attachment: fixed;
 }
 
@@ -31,20 +33,20 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #27314a;
+  background: #cbd5e1;
   border-radius: 999px;
-  border: 2px solid #0b0f17;
+  border: 2px solid #f7f9fb;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #36426680;
+  background: #94a3b8;
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-border bg-surface/80 backdrop-blur;
+    @apply rounded-2xl border border-border bg-surface shadow-card;
   }
   .input {
-    @apply w-full rounded-xl border border-border bg-surface2 px-3.5 py-2.5 text-sm text-white
+    @apply w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-ink
       placeholder:text-muted/70 outline-none transition
       focus:border-primary focus:ring-2 focus:ring-primary/30;
   }
@@ -56,13 +58,13 @@ body {
       transition disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primaryHover shadow-glow;
+    @apply btn bg-primary text-ink hover:bg-primaryHover shadow-glow;
   }
   .btn-ghost {
-    @apply btn border border-border bg-surface2 text-white hover:border-primary/60;
+    @apply btn border border-border bg-surface text-ink hover:border-primary/60 hover:bg-surface2;
   }
   .btn-danger {
-    @apply btn bg-danger/90 text-white hover:bg-danger;
+    @apply btn bg-danger text-white hover:bg-danger/90;
   }
   .badge {
     @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;

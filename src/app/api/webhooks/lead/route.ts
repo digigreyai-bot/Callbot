@@ -16,14 +16,15 @@ export async function POST(req: Request) {
     const property = String(body.property_interested_in ?? body.property ?? "").trim();
     const time = String(body.time ?? new Date().toISOString()).trim();
     const mode = String(body.mode ?? "direct_call").trim();
+    const clientId = String(body.clientId ?? body.client_id ?? "").trim() || undefined;
 
     if (!phone) return NextResponse.json({ error: "phone_number required" }, { status: 400 });
 
     startWorkflowProcessor();
     const wf =
       mode === "outbound_campaign"
-        ? await startOutboundCampaign({ name, phone, property })
-        : await startDirectRetellCall({ name, phone, property, time });
+        ? await startOutboundCampaign({ name, phone, property, clientId })
+        : await startDirectRetellCall({ name, phone, property, time, clientId });
 
     return NextResponse.json({ ok: true, workflowId: wf.id, type: wf.type });
   } catch (err: unknown) {

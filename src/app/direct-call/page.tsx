@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
+import ClientSelect from "@/components/ClientSelect";
 
 /**
  * Blueprint: Lead_Flow_BismillahRealty
@@ -14,6 +15,7 @@ export default function DirectCallPage() {
   const [phone, setPhone] = useState("");
   const [property, setProperty] = useState("");
   const [time, setTime] = useState("");
+  const [clientId, setClientId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +37,7 @@ export default function DirectCallPage() {
           property_interested_in: property,
           time: time || new Date().toISOString(),
           mode: "direct_call",
+          clientId,
         }),
       });
       const data = await res.json();
@@ -71,6 +74,7 @@ export default function DirectCallPage() {
             <label className="label">Time (for agent context)</label>
             <input className="input" value={time} onChange={(e) => setTime(e.target.value)} placeholder="ISO or leave empty = now" />
           </div>
+          <ClientSelect value={clientId} onChange={setClientId} />
           {error && <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">{error}</div>}
           <button type="submit" className="btn-primary w-full" disabled={submitting}>
             {submitting ? "Starting call…" : "Trigger direct call"}
@@ -78,7 +82,7 @@ export default function DirectCallPage() {
         </form>
 
         <div className="card space-y-4 p-6 text-sm text-muted">
-          <h3 className="font-semibold text-white">Webhook for CRM / Meta / Dashboard</h3>
+          <h3 className="font-semibold text-ink">Webhook for CRM / Meta / Dashboard</h3>
           <p>POST the same payload to:</p>
           <code className="block rounded-xl border border-border bg-surface2 px-3 py-2 text-xs text-accent break-all">
             POST /api/webhooks/lead
@@ -93,7 +97,7 @@ export default function DirectCallPage() {
 }`}
           </pre>
           <p className="text-xs">
-            Use <code className="text-white/80">mode: &quot;outbound_campaign&quot;</code> to start full SMS flow instead.
+            Use <code className="text-ink/80">mode: &quot;outbound_campaign&quot;</code> to start full SMS flow instead.
           </p>
         </div>
       </div>

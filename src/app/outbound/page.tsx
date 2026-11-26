@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
+import ClientSelect from "@/components/ClientSelect";
 
 interface AgentOption {
   id: string;
@@ -17,6 +18,7 @@ export default function OutboundPage() {
   const [phone, setPhone] = useState("");
   const [property, setProperty] = useState("");
   const [agentId, setAgentId] = useState("");
+  const [clientId, setClientId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +46,7 @@ export default function OutboundPage() {
       const res = await fetch("/api/calls/phone", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, property, agentId }),
+        body: JSON.stringify({ name, phone, property, agentId, clientId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to place call.");
@@ -95,6 +97,8 @@ export default function OutboundPage() {
             />
           </div>
 
+          <ClientSelect value={clientId} onChange={setClientId} />
+
           <div>
             <label className="label">Agent</label>
             <select className="input" value={agentId} onChange={(e) => setAgentId(e.target.value)}>
@@ -119,7 +123,7 @@ export default function OutboundPage() {
         </form>
 
         <div className="card space-y-4 p-6">
-          <h3 className="text-sm font-semibold text-white">How it works</h3>
+          <h3 className="text-sm font-semibold text-ink">How it works</h3>
           <ol className="space-y-3 text-sm text-muted">
             <Step n={1}>Retell dials the lead from your configured number.</Step>
             <Step n={2}>The agent qualifies the lead and books an appointment.</Step>
@@ -127,10 +131,10 @@ export default function OutboundPage() {
             <Step n={4}>The LLM extracts the appointment time, contact info, and a summary.</Step>
           </ol>
           <div className="rounded-xl border border-border bg-surface2/60 p-4 text-xs text-muted">
-            The dynamic variables <code className="text-white/80">lead_name</code>,{" "}
-            <code className="text-white/80">property_interested_in</code>,{" "}
-            <code className="text-white/80">Phone_Number</code>, and{" "}
-            <code className="text-white/80">current_datetime</code> are passed to the agent — matching
+            The dynamic variables <code className="text-ink/80">lead_name</code>,{" "}
+            <code className="text-ink/80">property_interested_in</code>,{" "}
+            <code className="text-ink/80">Phone_Number</code>, and{" "}
+            <code className="text-ink/80">current_datetime</code> are passed to the agent — matching
             the original Make.com flow.
           </div>
         </div>

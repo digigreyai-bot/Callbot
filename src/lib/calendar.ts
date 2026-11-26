@@ -48,8 +48,11 @@ export async function createCalendarEvent(input: {
   summary: string;
   description?: string;
   durationMinutes?: number;
+  /** Override calendar id (per-client). Falls back to GOOGLE_CALENDAR_ID. */
+  calendarId?: string | null;
 }): Promise<{ eventId: string; htmlLink?: string } | null> {
-  if (!isConfigured()) {
+  const calendarId = (input.calendarId || config.calendar.calendarId || "").trim();
+  if (!calendarId || !config.calendar.serviceAccountEmail || !config.calendar.privateKey) {
     console.warn("[calendar] Not configured — skipping event creation.");
     return null;
   }
@@ -60,7 +63,7 @@ export async function createCalendarEvent(input: {
 
   const token = await getAccessToken();
   const res = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(config.calendar.calendarId)}/events`,
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
     {
       method: "POST",
       headers: {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
+import ClientSelect from "@/components/ClientSelect";
 
 /**
  * Blueprint: 1. LEAD_FLOW_TALHA
@@ -14,6 +15,7 @@ export default function LeadFlowPage() {
   const [phone, setPhone] = useState("");
   const [property, setProperty] = useState("");
   const [email, setEmail] = useState("");
+  const [clientId, setClientId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +31,7 @@ export default function LeadFlowPage() {
       const res = await fetch("/api/workflows", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "lead_flow_sms", name, phone, property, email }),
+        body: JSON.stringify({ type: "lead_flow_sms", name, phone, property, email, clientId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed.");
@@ -65,6 +67,7 @@ export default function LeadFlowPage() {
             <label className="label">Property</label>
             <input className="input" value={property} onChange={(e) => setProperty(e.target.value)} placeholder="ABC villa" />
           </div>
+          <ClientSelect value={clientId} onChange={setClientId} />
           {error && (
             <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">{error}</div>
           )}
@@ -74,7 +77,7 @@ export default function LeadFlowPage() {
         </form>
 
         <div className="card space-y-4 p-6">
-          <h3 className="text-sm font-semibold text-white">Steps (from Make.com blueprint)</h3>
+          <h3 className="text-sm font-semibold text-ink">Steps (from Make.com blueprint)</h3>
           <ol className="space-y-3 text-sm text-muted">
             <FlowStep n={1} title="Twilio SMS #1" desc="Hi {name}, thanks for reaching out about {property}… wrapping up, back in a couple minutes." />
             <FlowStep n={2} title="Delay 10 seconds" desc="util:FunctionSleep" />
@@ -92,7 +95,7 @@ function FlowStep({ n, title, desc }: { n: number; title: string; desc: string }
     <li className="flex gap-3">
       <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-full bg-primary/20 text-xs font-bold text-primary">{n}</span>
       <div>
-        <p className="font-medium text-white">{title}</p>
+        <p className="font-medium text-ink">{title}</p>
         <p className="text-xs">{desc}</p>
       </div>
     </li>

@@ -1,9 +1,11 @@
 import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import type {
   CallRow,
   CallWithDetails,
+  ClientRow,
   ExtractionRow,
   Lead,
   ScheduledCallbackRow,
@@ -123,6 +125,17 @@ function migrate(db: Database.Database) {
 
     CREATE INDEX IF NOT EXISTS idx_workflows_status ON workflows(status, next_run_at);
     CREATE INDEX IF NOT EXISTS idx_workflow_steps_wf ON workflow_steps(workflow_id);
+
+    CREATE TABLE IF NOT EXISTS clients (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      dashboard_client_id TEXT NOT NULL,
+      dashboard_api_key TEXT,
+      calendar_id TEXT,
+      is_default INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   ensureColumn(db, "sms_messages", "status", "TEXT NOT NULL DEFAULT 'queued'");
@@ -130,6 +143,29 @@ function migrate(db: Database.Database) {
   ensureColumn(db, "sms_messages", "to_number", "TEXT");
   ensureColumn(db, "sms_messages", "error_message", "TEXT");
   ensureColumn(db, "sms_messages", "updated_at", "TEXT");
+  ensureColumn(db, "leads", "client_id", "TEXT");
+
+  seedDefaultClient(db);
+}
+
+function seedDefaultClient(database: Database.Database) {
+  const count = (database.prepare(`SELECT COUNT(*) AS c FROM clients`).get() as { c: number }).c;
+  if (count > 0) return;
+  const envClientId = (process.env.DASHBOARD_CLIENT_ID ?? "").trim();
+  if (!envClientId) return;
+  const id = randomUUID();
+  database
+    .prepare(
+      `INSERT INTO clients (id, name, dashboard_client_id, dashboard_api_key, calendar_id, is_default)
+       VALUES (@id, @name, @dashboard_client_id, @dashboard_api_key, @calendar_id, 1)`
+    )
+    .run({
+      id,
+      name: "Default",
+      dashboard_client_id: envClientId,
+      dashboard_api_key: (process.env.DASHBOARD_API_KEY ?? "").trim() || null,
+      calendar_id: (process.env.GOOGLE_CALENDAR_ID ?? "").trim() || null,
+    });
 }
 
 function ensureColumn(database: Database.Database, table: string, column: string, ddl: string) {
@@ -151,18 +187,119 @@ export function createLead(input: {
   phone: string;
   email?: string | null;
   property_interested_in?: string | null;
+  client_id?: string | null;
 }): Lead {
   const stmt = db().prepare(
-    `INSERT INTO leads (name, phone, email, property_interested_in)
-     VALUES (@name, @phone, @email, @property_interested_in)`
+    `INSERT INTO leads (name, phone, email, property_interested_in, client_id)
+     VALUES (@name, @phone, @email, @property_interested_in, @client_id)`
   );
   const info = stmt.run({
     name: input.name,
     phone: input.phone,
     email: input.email ?? null,
     property_interested_in: input.property_interested_in ?? null,
+    client_id: input.client_id ?? null,
   });
   return db().prepare(`SELECT * FROM leads WHERE id = ?`).get(info.lastInsertRowid) as Lead;
+}
+
+/* ──────────────────────────── Clients ──────────────────────────── */
+
+export function listClients(): ClientRow[] {
+  return db()
+    .prepare(`SELECT * FROM clients ORDER BY is_default DESC, name COLLATE NOCASE ASC`)
+    .all() as ClientRow[];
+}
+
+export function getClient(id: string): ClientRow | undefined {
+  return db().prepare(`SELECT * FROM clients WHERE id = ?`).get(id) as ClientRow | undefined;
+}
+
+export function getDefaultClient(): ClientRow | undefined {
+  return db().prepare(`SELECT * FROM clients WHERE is_default = 1 LIMIT 1`).get() as
+    | ClientRow
+    | undefined;
+}
+
+export function upsertClient(input: {
+  id?: string;
+  name: string;
+  dashboard_client_id: string;
+  dashboard_api_key?: string | null;
+  calendar_id?: string | null;
+  is_default?: boolean;
+}): ClientRow {
+  const id = input.id?.trim() || randomUUID();
+  const existing = getClient(id);
+  const makeDefault =
+    input.is_default === true || (!existing && listClients().length === 0);
+  const isDefaultFlag = makeDefault ? 1 : input.is_default ? 1 : 0;
+
+  if (makeDefault) {
+    db().prepare(`UPDATE clients SET is_default = 0`).run();
+  }
+
+  if (existing) {
+    const keepKey =
+      input.dashboard_api_key === undefined || input.dashboard_api_key === ""
+        ? existing.dashboard_api_key
+        : input.dashboard_api_key;
+    db()
+      .prepare(
+        `UPDATE clients SET
+           name = @name,
+           dashboard_client_id = @dashboard_client_id,
+           dashboard_api_key = @dashboard_api_key,
+           calendar_id = @calendar_id,
+           is_default = @is_default,
+           updated_at = datetime('now')
+         WHERE id = @id`
+      )
+      .run({
+        id,
+        name: input.name.trim(),
+        dashboard_client_id: input.dashboard_client_id.trim(),
+        dashboard_api_key: keepKey || null,
+        calendar_id: input.calendar_id?.trim() || null,
+        is_default: isDefaultFlag,
+      });
+  } else {
+    db()
+      .prepare(
+        `INSERT INTO clients (id, name, dashboard_client_id, dashboard_api_key, calendar_id, is_default)
+         VALUES (@id, @name, @dashboard_client_id, @dashboard_api_key, @calendar_id, @is_default)`
+      )
+      .run({
+        id,
+        name: input.name.trim(),
+        dashboard_client_id: input.dashboard_client_id.trim(),
+        dashboard_api_key: input.dashboard_api_key?.trim() || null,
+        calendar_id: input.calendar_id?.trim() || null,
+        is_default: isDefaultFlag,
+      });
+  }
+  return getClient(id)!;
+}
+
+export function deleteClient(id: string): boolean {
+  const row = getClient(id);
+  if (!row) return false;
+  db().prepare(`DELETE FROM clients WHERE id = ?`).run(id);
+  if (row.is_default) {
+    const next = listClients()[0];
+    if (next) setDefaultClient(next.id);
+  }
+  return true;
+}
+
+export function setDefaultClient(id: string): ClientRow | undefined {
+  const row = getClient(id);
+  if (!row) return undefined;
+  db().prepare(`UPDATE clients SET is_default = 0`).run();
+  db()
+    .prepare(`UPDATE clients SET is_default = 1, updated_at = datetime('now') WHERE id = ?`)
+    .run(id);
+  return getClient(id);
 }
 
 /* ───────────────────────────── Calls ───────────────────────────── */

@@ -58,7 +58,7 @@ export default function WorkflowTimeline({ steps }: { steps: WorkflowStepRow[] }
             </div>
             <div className="flex-1 pt-1">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-white">{s.label}</p>
+                <p className="text-sm font-medium text-ink">{s.label}</p>
                 <StepStatus status={s.status} />
               </div>
               {s.detail && <p className="mt-1 text-xs text-muted leading-relaxed">{s.detail}</p>}

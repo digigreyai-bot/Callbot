@@ -6,7 +6,7 @@ import Sidebar from "@/components/Sidebar";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Call Bot — Retell Control Center",
+  title: "Agent Assist Plus — Call Bot",
   description: "Place outbound calls, run web calls, and review AI-extracted appointments.",
 };
 

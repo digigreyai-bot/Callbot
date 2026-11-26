@@ -22,6 +22,7 @@ import {
   setWorkflowContext,
   updateWorkflow,
 } from "../db";
+import { resolveClientCreds } from "../clients";
 import { postCallToDashboard, postLeadToDashboard, postScheduleToDashboard } from "../dashboard";
 import { createCalendarEvent } from "../calendar";
 import {
@@ -79,15 +80,22 @@ export async function startLeadFlowSms(input: {
   phone: string;
   property?: string;
   email?: string;
+  clientId?: string | null;
 }) {
+  const clientId = input.clientId || resolveClientCreds().id;
   const lead = createLead({
     name: input.name,
     phone: input.phone,
     email: input.email,
     property_interested_in: input.property ?? null,
+    client_id: clientId,
   });
   const { createWorkflow } = await import("../db");
-  const wf = createWorkflow({ type: "lead_flow_sms", lead_id: lead.id, context: { step: "sms_initial" } });
+  const wf = createWorkflow({
+    type: "lead_flow_sms",
+    lead_id: lead.id,
+    context: { step: "sms_initial", clientId },
+  });
   updateWorkflow(wf.id, { status: "running", current_step: "sms_initial" });
   runWorkflow(wf.id).catch((e) => console.error("[workflow]", e));
   return wf;
@@ -100,18 +108,21 @@ export async function startOutboundCampaign(input: {
   phone: string;
   property?: string;
   email?: string;
+  clientId?: string | null;
 }) {
+  const clientId = input.clientId || resolveClientCreds().id;
   const lead = createLead({
     name: input.name,
     phone: input.phone,
     email: input.email,
     property_interested_in: input.property ?? null,
+    client_id: clientId,
   });
   const { createWorkflow } = await import("../db");
   const wf = createWorkflow({
     type: "outbound_campaign",
     lead_id: lead.id,
-    context: { step: "sms_call_notice", retryCount: 0 },
+    context: { step: "sms_call_notice", retryCount: 0, clientId },
   });
   updateWorkflow(wf.id, { status: "running", current_step: "sms_call_notice" });
   runWorkflow(wf.id).catch((e) => console.error("[workflow]", e));
@@ -124,12 +135,15 @@ export async function startDirectRetellCall(input: {
   property?: string;
   time?: string;
   email?: string;
+  clientId?: string | null;
 }) {
+  const clientId = input.clientId || resolveClientCreds().id;
   const lead = createLead({
     name: input.name,
     phone: input.phone,
     email: input.email,
     property_interested_in: input.property ?? null,
+    client_id: clientId,
   });
   const { createWorkflow } = await import("../db");
   const wf = createWorkflow({
@@ -138,6 +152,7 @@ export async function startDirectRetellCall(input: {
     context: {
       step: "place_call",
       webhookTime: input.time ?? new Date().toISOString(),
+      clientId,
     },
   });
   updateWorkflow(wf.id, { status: "running", current_step: "place_call" });
@@ -219,11 +234,17 @@ async function runLeadFlowStep(
   }
 
   if (step === "dashboard_post_lead") {
-    await postLeadToDashboard({
-      leadId: `lead_${lead.id}`,
-      firstName: lead.name,
-      phoneNumber: lead.phone,
-    });
+    const creds = resolveClientCreds(
+      (ctx.clientId as string | undefined) || (lead as { client_id?: string | null }).client_id
+    );
+    await postLeadToDashboard(
+      {
+        leadId: `lead_${lead.id}`,
+        firstName: lead.name,
+        phoneNumber: lead.phone,
+      },
+      creds
+    );
     await stepDone(wfId, "dashboard_post_lead", "POST lead to dashboard");
     updateWorkflow(wfId, { status: "completed", current_step: "done" });
   }
@@ -371,7 +392,13 @@ async function runOutboundStep(
 
   if (step === "post_call_process") {
     const callId = String(ctx.retellCallId ?? "");
-    const synced = await syncCallByRetellId(callId, { forceExtract: true });
+    const creds = resolveClientCreds(
+      (ctx.clientId as string | undefined) || (lead as { client_id?: string | null }).client_id
+    );
+    const synced = await syncCallByRetellId(callId, {
+      forceExtract: true,
+      skipDashboardForward: true,
+    });
     const transcript = synced?.transcript ?? "";
 
     /* Calendar_Summary + BismillahRealty calendar step */
@@ -382,6 +409,7 @@ async function runOutboundStep(
           startDateTime: cal.startDateTime,
           summary: cal.eventName,
           description: cal.summary,
+          calendarId: creds.calendarId,
         });
         await stepDone(
           wfId,
@@ -393,19 +421,22 @@ async function runOutboundStep(
     }
 
     /* Lead_Flow_call dashboard POST */
-    await postCallToDashboard({
-      name: synced?.extraction?.name ?? lead.name,
-      email: synced?.extraction?.email ?? "",
-      phoneNumber: synced?.extraction?.phone ?? lead.phone,
-      appointmentTime: synced?.extraction?.appointment_time ?? "",
-      propertyInterestedIn: synced?.extraction?.property_interested_in ?? property,
-      callRecordingURL: synced?.recording_url ?? "",
-      callDuration: synced?.duration_sec ?? 0,
-      callId,
-      summary: synced?.extraction?.summary ?? "",
-      agentId: synced?.agent_id ?? null,
-      fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
-    });
+    await postCallToDashboard(
+      {
+        name: synced?.extraction?.name ?? lead.name,
+        email: synced?.extraction?.email ?? "",
+        phoneNumber: synced?.extraction?.phone ?? lead.phone,
+        appointmentTime: synced?.extraction?.appointment_time ?? "",
+        propertyInterestedIn: synced?.extraction?.property_interested_in ?? property,
+        callRecordingURL: synced?.recording_url ?? "",
+        callDuration: synced?.duration_sec ?? 0,
+        callId,
+        summary: synced?.extraction?.summary ?? "",
+        agentId: synced?.agent_id ?? null,
+        fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
+      },
+      { creds }
+    );
     await stepDone(wfId, "dashboard_post_call", "POST call result to dashboard");
     updateWorkflow(wfId, { status: "completed", current_step: "done" });
     return;
@@ -528,12 +559,18 @@ async function runOutboundStep(
       scheduled_at: scheduledAt,
       notes: String(ctx.lastReply ?? ""),
     });
-    await postScheduleToDashboard({
-      name: lead.name,
-      phoneNumber: lead.phone,
-      scheduledAt,
-      notes: String(ctx.lastReply ?? ""),
-    });
+    const creds = resolveClientCreds(
+      (ctx.clientId as string | undefined) || (lead as { client_id?: string | null }).client_id
+    );
+    await postScheduleToDashboard(
+      {
+        name: lead.name,
+        phoneNumber: lead.phone,
+        scheduledAt,
+        notes: String(ctx.lastReply ?? ""),
+      },
+      creds
+    );
     await stepDone(wfId, "schedule_save", "Save callback schedule", scheduledAt);
 
     /* If scheduled time is now/past, trigger the call */

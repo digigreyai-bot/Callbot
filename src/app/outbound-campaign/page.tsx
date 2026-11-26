@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
+import ClientSelect from "@/components/ClientSelect";
 
 /**
  * Full 19-step outbound campaign from user's Make.com description
@@ -13,6 +14,7 @@ export default function OutboundCampaignPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [property, setProperty] = useState("");
+  const [clientId, setClientId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +30,7 @@ export default function OutboundCampaignPage() {
       const res = await fetch("/api/workflows", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "outbound_campaign", name, phone, property }),
+        body: JSON.stringify({ type: "outbound_campaign", name, phone, property, clientId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed.");
@@ -60,6 +62,7 @@ export default function OutboundCampaignPage() {
             <label className="label">Property Interested In</label>
             <input className="input" value={property} onChange={(e) => setProperty(e.target.value)} placeholder="villa downtown" />
           </div>
+          <ClientSelect value={clientId} onChange={setClientId} />
           {error && (
             <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">{error}</div>
           )}
@@ -72,12 +75,12 @@ export default function OutboundCampaignPage() {
         </form>
 
         <div className="card max-h-[600px] overflow-y-auto p-6">
-          <h3 className="mb-4 text-sm font-semibold text-white">All 19 steps (Make.com flow)</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">All 19 steps (Make.com flow)</h3>
           <ol className="space-y-2.5 text-xs text-muted">
             {STEPS.map((s) => (
               <li key={s.n} className="flex gap-2">
                 <span className="w-5 flex-shrink-0 font-bold text-primary">{s.n}.</span>
-                <span><strong className="text-white/90">{s.title}</strong> — {s.desc}</span>
+                <span><strong className="text-ink/90">{s.title}</strong> — {s.desc}</span>
               </li>
             ))}
           </ol>

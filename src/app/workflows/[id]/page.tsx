@@ -123,7 +123,7 @@ export default function WorkflowDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
         <div className="card p-6">
-          <h3 className="mb-5 text-sm font-semibold text-white">Flow Timeline</h3>
+          <h3 className="mb-5 text-sm font-semibold text-ink">Flow Timeline</h3>
           <WorkflowTimeline steps={wf.steps} />
         </div>
 
@@ -131,11 +131,11 @@ export default function WorkflowDetailPage() {
           {linked && (
             <div className="card space-y-3 p-5">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-white">Call status</h3>
+                <h3 className="text-sm font-semibold text-ink">Call status</h3>
                 <span className={`badge ${callStatusClass(linked.status)}`}>{linked.status}</span>
               </div>
               <p className="text-xs text-muted">
-                Retell ID: <span className="text-white/80">{linked.retell_call_id}</span>
+                Retell ID: <span className="text-ink/80">{linked.retell_call_id}</span>
               </p>
               {linked.duration_sec != null && (
                 <p className="text-xs text-muted">Duration: {linked.duration_sec}s</p>
@@ -152,7 +152,7 @@ export default function WorkflowDetailPage() {
 
           {(waitingReply || wf.status === "running") && (
             <form onSubmit={sendReply} className="card space-y-3 p-5">
-              <h3 className="text-sm font-semibold text-white">Simulate SMS Reply</h3>
+              <h3 className="text-sm font-semibold text-ink">Simulate SMS Reply</h3>
               <p className="text-xs text-muted">
                 Type the lead&apos;s reply here (e.g. &quot;YES&quot;, &quot;call me at 3pm&quot;, &quot;busy later&quot;).
               </p>
@@ -170,7 +170,7 @@ export default function WorkflowDetailPage() {
 
           <div className="card p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className="text-sm font-semibold text-white">SMS Thread</h3>
+              <h3 className="text-sm font-semibold text-ink">SMS Thread</h3>
               <button
                 type="button"
                 onClick={refreshSms}
@@ -188,7 +188,7 @@ export default function WorkflowDetailPage() {
                   <div
                     key={m.id}
                     className={`rounded-xl px-3 py-2.5 text-xs ${
-                      m.direction === "outbound" ? "bg-surface2 text-white" : "ml-4 bg-primary/20 text-white"
+                      m.direction === "outbound" ? "bg-surface2 text-ink" : "ml-4 bg-primary/20 text-ink"
                     }`}
                   >
                     <div className="flex flex-wrap items-center gap-2">
@@ -221,7 +221,7 @@ export default function WorkflowDetailPage() {
           </div>
 
           <div className="card p-5 text-xs text-muted">
-            <p className="mb-2 font-semibold text-white/80">Make.com steps mapped</p>
+            <p className="mb-2 font-semibold text-ink/80">Make.com steps mapped</p>
             <ul className="space-y-1 leading-relaxed">
               <li>① SMS → ② Wait → ③ Check reply → ④ AI yes/no</li>
               <li>YES → Retell call → poll → extract → calendar → dashboard</li>

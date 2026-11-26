@@ -5,6 +5,7 @@ import { getCall } from "./retell";
 import { postCallToDashboard } from "./dashboard";
 import { createCalendarEvent } from "./calendar";
 import { extractCalendarFromTranscript } from "./sms-ai";
+import { resolveClientCreds } from "./clients";
 import type { CallWithDetails } from "./types";
 
 /**
@@ -15,7 +16,7 @@ import type { CallWithDetails } from "./types";
  */
 export async function syncCallByRetellId(
   retellCallId: string,
-  opts?: { forceExtract?: boolean }
+  opts?: { forceExtract?: boolean; skipDashboardForward?: boolean }
 ): Promise<CallWithDetails | undefined> {
   const existing = getCallByRetellId(retellCallId);
   if (!existing) return undefined;
@@ -38,13 +39,19 @@ export async function syncCallByRetellId(
     (opts?.forceExtract || !details.extraction);
 
   if (shouldExtract) {
-    await runExtraction(refreshed.id, refreshed.transcript!);
+    await runExtraction(refreshed.id, refreshed.transcript!, {
+      skipDashboardForward: opts?.skipDashboardForward,
+    });
   }
 
   return getCallWithDetails(refreshed.id);
 }
 
-export async function runExtraction(callId: number, transcript: string) {
+export async function runExtraction(
+  callId: number,
+  transcript: string,
+  opts?: { skipDashboardForward?: boolean }
+) {
   const result = await extractFromTranscript(transcript);
   upsertExtraction({
     call_id: callId,
@@ -56,14 +63,20 @@ export async function runExtraction(callId: number, transcript: string) {
     summary: result.summary || null,
     raw_json: JSON.stringify(result),
   });
-  await forwardToDashboard(callId);
+  if (!opts?.skipDashboardForward) {
+    await forwardToDashboard(callId);
+  }
 }
 
 /** Inbound Call Copilot + Calendar_Summary: extract, calendar, dashboard POST. */
 export async function processInboundCallEnded(retellCallId: string): Promise<CallWithDetails | undefined> {
-  const synced = await syncCallByRetellId(retellCallId, { forceExtract: true });
+  const synced = await syncCallByRetellId(retellCallId, {
+    forceExtract: true,
+    skipDashboardForward: true,
+  });
   if (!synced?.transcript) return synced;
 
+  const creds = resolveClientCreds(synced.lead?.client_id);
   const nowIso = new Date().toISOString();
   try {
     const cal = await extractCalendarFromTranscript(synced.transcript, nowIso);
@@ -72,6 +85,7 @@ export async function processInboundCallEnded(retellCallId: string): Promise<Cal
         startDateTime: cal.startDateTime,
         summary: cal.eventName,
         description: cal.summary,
+        calendarId: creds.calendarId,
       });
     }
   } catch (e) {
@@ -93,7 +107,7 @@ export async function processInboundCallEnded(retellCallId: string): Promise<Cal
         agentId: synced.agent_id ?? null,
         fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
       },
-      { inbound: true }
+      { inbound: true, creds }
     );
   } catch (e) {
     console.error("[inbound-dashboard]", e);
@@ -106,12 +120,15 @@ export async function processInboundCallEnded(retellCallId: string): Promise<Cal
 export async function createCalendarFromCall(callId: number) {
   const call = getCallById(callId);
   if (!call?.transcript) throw new Error("No transcript on this call.");
+  const details = getCallWithDetails(callId);
+  const creds = resolveClientCreds(details?.lead?.client_id);
   const cal = await extractCalendarFromTranscript(call.transcript, new Date().toISOString());
   if (!cal.startDateTime) throw new Error("Could not extract appointment time from transcript.");
   const ev = await createCalendarEvent({
     startDateTime: cal.startDateTime,
     summary: cal.eventName,
     description: cal.summary,
+    calendarId: creds.calendarId,
   });
   return { extraction: cal, event: ev };
 }
@@ -121,20 +138,24 @@ async function forwardToDashboard(callId: number) {
   if (!config.dashboard.url) return;
   const details = getCallWithDetails(callId);
   if (!details) return;
+  const creds = resolveClientCreds(details.lead?.client_id);
   try {
-    await postCallToDashboard({
-      name: details.extraction?.name ?? details.lead?.name ?? "",
-      email: details.extraction?.email ?? "",
-      phoneNumber: details.extraction?.phone ?? details.lead?.phone ?? "",
-      appointmentTime: details.extraction?.appointment_time ?? "",
-      propertyInterestedIn: details.extraction?.property_interested_in ?? "",
-      callRecordingURL: details.recording_url ?? "",
-      callDuration: details.duration_sec ?? 0,
-      callId: details.retell_call_id,
-      summary: details.extraction?.summary ?? "",
-      agentId: details.agent_id ?? null,
-      fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
-    });
+    await postCallToDashboard(
+      {
+        name: details.extraction?.name ?? details.lead?.name ?? "",
+        email: details.extraction?.email ?? "",
+        phoneNumber: details.extraction?.phone ?? details.lead?.phone ?? "",
+        appointmentTime: details.extraction?.appointment_time ?? "",
+        propertyInterestedIn: details.extraction?.property_interested_in ?? "",
+        callRecordingURL: details.recording_url ?? "",
+        callDuration: details.duration_sec ?? 0,
+        callId: details.retell_call_id,
+        summary: details.extraction?.summary ?? "",
+        agentId: details.agent_id ?? null,
+        fromNumber: config.retell.fromNumber || config.twilio.fromNumber || null,
+      },
+      { creds }
+    );
   } catch (err) {
     console.error("[dashboard-forward] failed:", err);
   }

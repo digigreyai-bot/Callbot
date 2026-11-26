@@ -19,14 +19,15 @@ export async function POST(req: Request) {
     const phone = String(body.phone ?? "").trim();
     const property = String(body.property ?? "").trim();
     const email = String(body.email ?? "").trim() || undefined;
+    const clientId = String(body.clientId ?? "").trim() || undefined;
 
     if (!phone) return NextResponse.json({ error: "Phone is required." }, { status: 400 });
 
     startWorkflowProcessor();
     const wf =
       type === "lead_flow_sms"
-        ? await startLeadFlowSms({ name, phone, property, email })
-        : await startOutboundCampaign({ name, phone, property, email });
+        ? await startLeadFlowSms({ name, phone, property, email, clientId })
+        : await startOutboundCampaign({ name, phone, property, email, clientId });
 
     return NextResponse.json({ workflow: wf });
   } catch (err: unknown) {

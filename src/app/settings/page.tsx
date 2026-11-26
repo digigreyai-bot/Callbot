@@ -15,7 +15,7 @@ export default function SettingsPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="card p-6">
-          <h3 className="mb-4 text-sm font-semibold text-white">Retell AI</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">Retell AI</h3>
           <dl className="space-y-3 text-sm">
             <Row label="API key" ok={s.retellApiKey} />
             <Row label="From number" value={s.retellFromNumber} ok={Boolean(s.retellFromNumber)} />
@@ -25,7 +25,7 @@ export default function SettingsPage() {
         </section>
 
         <section className="card p-6">
-          <h3 className="mb-4 text-sm font-semibold text-white">LLM Extraction</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">LLM Extraction</h3>
           <dl className="space-y-3 text-sm">
             <Row label="Provider" value={s.extractionProvider} ok />
             <Row
@@ -43,7 +43,7 @@ export default function SettingsPage() {
         </section>
 
         <section className="card p-6">
-          <h3 className="mb-4 text-sm font-semibold text-white">Twilio SMS</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">Twilio SMS</h3>
           <dl className="space-y-3 text-sm">
             <Row label="Account configured" ok={s.twilioConfigured} />
             <Row label="Messaging / From" value={s.twilioMessaging} ok={Boolean(s.twilioMessaging)} />
@@ -52,7 +52,7 @@ export default function SettingsPage() {
         </section>
 
         <section className="card p-6">
-          <h3 className="mb-4 text-sm font-semibold text-white">Google Calendar</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">Google Calendar</h3>
           <dl className="space-y-3 text-sm">
             <Row label="Configured" ok={s.calendarConfigured} />
             <Row label="Calendar ID" value={s.calendarId} ok={Boolean(s.calendarId)} />
@@ -60,7 +60,14 @@ export default function SettingsPage() {
         </section>
 
         <section className="card p-6 lg:col-span-2">
-          <h3 className="mb-4 text-sm font-semibold text-white">Optional dashboard forwarding</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">Optional dashboard forwarding</h3>
+          <p className="mb-3 text-xs text-muted">
+            Per-client Agent Assist ID / API key / calendar: manage under{" "}
+            <a href="/clients" className="text-primary hover:underline">
+              Clients
+            </a>
+            . Env values remain the fallback.
+          </p>
           <dl className="space-y-3 text-sm">
             <Row
               label="External dashboard POST"
@@ -69,16 +76,16 @@ export default function SettingsPage() {
             />
           </dl>
           <p className="mt-4 text-xs text-muted">
-            Set <code className="text-white/80">DASHBOARD_API_URL</code> and{" "}
-            <code className="text-white/80">DASHBOARD_SERVICE_KEY</code> (same as AA+{" "}
-            <code className="text-white/80">CALLBOT_SERVICE_KEY</code>) so each Retell agent maps to
-            the correct AA+ client.
+            Set <code className="text-ink/80">DASHBOARD_API_URL</code> and{" "}
+            <code className="text-ink/80">DASHBOARD_SERVICE_KEY</code> (same as AA+{" "}
+            <code className="text-ink/80">CALLBOT_SERVICE_KEY</code>) so each Retell agent maps to
+            the correct AA+ client — or pick a client in the sidebar / Clients page.
           </p>
         </section>
       </div>
 
         <section className="card p-6 lg:col-span-2">
-          <h3 className="mb-4 text-sm font-semibold text-white">Webhooks (copy to Make.com replacements)</h3>
+          <h3 className="mb-4 text-sm font-semibold text-ink">Webhooks (copy to Make.com replacements)</h3>
           <div className="grid gap-2 sm:grid-cols-2">
             <WebhookRow label="Retell (inbound + outbound)" path="/api/webhooks/retell" />
             <WebhookRow label="CRM lead trigger (Bismillah)" path="/api/webhooks/lead" />
@@ -94,7 +101,7 @@ function Row({ label, value, ok }: { label: string; value?: string | null; ok: b
   return (
     <div className="flex items-center justify-between gap-4 border-b border-border/50 pb-3 last:border-0 last:pb-0">
       <dt className="text-muted">{label}</dt>
-      <dd className="flex items-center gap-2 text-right font-medium text-white">
+      <dd className="flex items-center gap-2 text-right font-medium text-ink">
         {value && <span className="text-xs text-muted">{value}</span>}
         <span className={`badge ${ok ? "bg-success/15 text-success" : "bg-danger/15 text-danger"}`}>
           {ok ? "OK" : "Missing"}
@@ -107,7 +114,7 @@ function Row({ label, value, ok }: { label: string; value?: string | null; ok: b
 function WebhookRow({ label, path }: { label: string; path: string }) {
   return (
     <div className="rounded-xl border border-border bg-surface2/60 p-3">
-      <p className="text-xs font-medium text-white mb-1">{label}</p>
+      <p className="text-xs font-medium text-ink mb-1">{label}</p>
       <code className="text-[10px] text-accent break-all">{"<host>"}{path}</code>
     </div>
   );
