@@ -42,7 +42,7 @@ export default function ClientSwitcher() {
 
   if (loading) {
     return (
-      <div className="mb-4 rounded-xl border border-border bg-surface2 px-3 py-2 text-xs text-muted">
+      <div className="rounded-lg border border-border bg-surface2 px-2.5 py-2 text-[11px] text-muted">
         Loading clients…
       </div>
     );
@@ -50,19 +50,19 @@ export default function ClientSwitcher() {
 
   if (clients.length === 0) {
     return (
-      <div className="mb-4 rounded-xl border border-dashed border-border bg-surface2/60 px-3 py-2 text-xs text-muted">
+      <div className="rounded-lg border border-dashed border-border bg-surface2/60 px-2.5 py-2 text-[11px] text-muted">
         No clients yet. Add one under Clients.
       </div>
     );
   }
 
   return (
-    <div className="mb-4">
-      <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted">
+    <div>
+      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted">
         Active client
       </label>
       <select
-        className="input py-2 text-sm"
+        className="input py-1.5 text-[13px]"
         value={activeId}
         onChange={(e) => onChange(e.target.value)}
       >
